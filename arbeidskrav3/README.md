@@ -50,9 +50,11 @@ gokstadakademiet-arbeidskrav3/
 ```
 
 ## Bruk av KI
-- KI ble brukt for å få oppgaven forklart tydeligere.  
-- Etter at koden var skrevet, ble KI brukt til å sammenligne alternative løsninger og kvalitetssikre strukturen.  
-- KI ble brukt for å sikre at kravene i oppgaveteksten ble fulgt.  
+I dette arbeidet ble ChatGPT brukt som støtteverktøy.
+
+- Siden norsk ikke er mitt morsmål, ble KI brukt for å få oppgavene forklart på en tydeligere og mer forståelig måte.
+- KI ble brukt til å sammenligne alternative løsninger og kvalitetssikre strukturen.
+- KI ble brukt for å sikre at kravene i oppgaveteksten ble fulgt.
 - KI ble brukt til å utforme denne README-filen.
 
 ## Oppsummering

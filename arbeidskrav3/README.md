@@ -1,5 +1,4 @@
-# Avansert Kalkulator – README
-Arbeidskrav 3 – Oppgave 3
+# Gokstad Akademiet - Arbeidskrav 3 – Oppgave 3 - Python
 
 Dette prosjektet inneholder løsningen til Oppgave 3 i Arbeidskrav 3. Programmet er en menybasert kalkulator skrevet i Python og ligger i filen:
 

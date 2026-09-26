@@ -12,7 +12,7 @@ CREATE TABLE IF NOT EXISTS books (
   CONSTRAINT chk_isbn CHECK (isbn REGEXP '^[0-9]{13}$'),
   CONSTRAINT chk_publication_year CHECK (publication_year BETWEEN 1000 AND 2100),
   CONSTRAINT chk_page_count CHECK (page_count > 0)
-) ENGINE=InnoDB;
+) ENGINE=InnoDB DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
 CREATE TABLE IF NOT EXISTS copies (
   isbn CHAR(13) NOT NULL,
@@ -21,14 +21,14 @@ CREATE TABLE IF NOT EXISTS copies (
   PRIMARY KEY (isbn, copy_number),
   CONSTRAINT fk_copies_book FOREIGN KEY (isbn) REFERENCES books (isbn)
     ON UPDATE CASCADE ON DELETE RESTRICT
-) ENGINE=InnoDB;
+) ENGINE=InnoDB DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
 CREATE TABLE IF NOT EXISTS borrowers (
   id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
   first_name VARCHAR(100) NOT NULL,
   last_name VARCHAR(100) NOT NULL,
   email VARCHAR(254) NOT NULL UNIQUE
-) ENGINE=InnoDB;
+) ENGINE=InnoDB DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
 CREATE TABLE IF NOT EXISTS loans (
   id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
@@ -46,4 +46,4 @@ CREATE TABLE IF NOT EXISTS loans (
   CONSTRAINT chk_return_date CHECK (returned_at IS NULL OR returned_at >= loan_date),
   UNIQUE KEY ux_one_open_loan_per_copy (isbn, open_copy_number),
   INDEX ix_loans_borrower (borrower_id)
-) ENGINE=InnoDB;
+) ENGINE=InnoDB DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;

@@ -1,5 +1,11 @@
 # Library Lending CLI
 
+[![CI](https://github.com/cihat-kose/library-lending-cli/actions/workflows/ci.yml/badge.svg?branch=master)](https://github.com/cihat-kose/library-lending-cli/actions/workflows/ci.yml)
+![Python 3.11+](https://img.shields.io/badge/Python-3.11%2B-3776AB?logo=python&logoColor=white)
+![MySQL 8.0+](https://img.shields.io/badge/MySQL-8.0%2B-4479A1?logo=mysql&logoColor=white)
+![Tests: pytest](https://img.shields.io/badge/Tests-pytest-0A9EDC?logo=pytest&logoColor=white)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+
 A small, tested Python/MySQL command-line application for browsing books, lending and returning copies, and viewing borrower history. The original coursework and AI-use statement remain preserved under `docs/coursework/`.
 
 ## Quick start

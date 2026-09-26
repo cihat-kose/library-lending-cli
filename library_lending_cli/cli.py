@@ -122,8 +122,8 @@ def menu(connection: Any) -> None:
             run(args, connection)
         except (ValueError, LendingError) as exc:
             print(f"Error: {exc}")
-        except DatabaseError as exc:
-            print(f"Database error: {exc}. Please retry or exit.")
+        except DatabaseError:
+            print("Database error. Please check MySQL and retry, or exit.")
 
 
 def read_id(prompt: str) -> int:
@@ -153,6 +153,10 @@ def main(argv: Sequence[str] | None = None) -> int:
     except (ValueError, LendingError) as exc:
         print(f"Error: {exc}", file=sys.stderr)
         return 2
-    except (DatabaseError, OSError) as exc:
-        print(f"Database error: {exc}. Check MySQL, .env and run setup first.", file=sys.stderr)
+    except (DatabaseError, OSError):
+        print(
+            "Database error. Check MySQL, .env and run setup first; "
+            "connection details are not shown for safety.",
+            file=sys.stderr,
+        )
         return 3

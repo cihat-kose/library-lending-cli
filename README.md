@@ -44,7 +44,7 @@ Loan 1 returned.
    ```bash
    python -m venv .venv
    source .venv/bin/activate        # Windows PowerShell: .venv\Scripts\Activate.ps1
-   python -m pip install -e ".[dev]"
+   python -m pip install -c requirements-ci.txt -e ".[dev]"
    ```
 
 2. Create the schema and deterministic demonstration data with a local MySQL 8 server:
@@ -97,12 +97,19 @@ pytest
 python -m build
 ```
 
+CI resolves development tools through `requirements-ci.txt`, which pins every direct build and
+test dependency. Runtime metadata retains bounded compatible ranges for library consumers. Update
+the pins deliberately and verify the full workflow rather than accepting an unreviewed major
+upgrade.
+
 Unit tests isolate error paths and transaction behavior with test doubles. The integration test
 recreates the disposable `library_lending_test` schema and checks the complete
 lend-conflict-return-lend lifecycle against MySQL. It is skipped locally unless
 `RUN_MYSQL_INTEGRATION=1`; CI runs it against a MySQL 8.4 service. The fixture refuses to drop a
 database whose name does not end in `_test`. Coverage has an enforced 85% minimum for the Python
-package.
+package. Schema setup uses the MySQL root account, then the lifecycle test reconnects as a dedicated
+test user limited to `SELECT`, `INSERT`, and `UPDATE`; a separate contract test checks that this
+account has no schema- or user-administration grants.
 
 ## Design
 

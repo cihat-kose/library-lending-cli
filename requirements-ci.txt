@@ -1,0 +1,7 @@
+# Exact versions used by CI. Dependabot can update these in a reviewable change.
+build==1.3.0
+mysql-connector-python==26.7.0
+pytest==9.0.3
+pytest-cov==7.0.0
+ruff==0.15.12
+setuptools==80.9.0

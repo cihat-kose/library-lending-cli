@@ -16,8 +16,12 @@ def database():
     if os.getenv("RUN_MYSQL_INTEGRATION") != "1":
         pytest.skip("set RUN_MYSQL_INTEGRATION=1 to run MySQL integration tests")
     database_name = os.getenv("MYSQL_TEST_DATABASE", "library_lending_test")
+    test_user = os.getenv("MYSQL_TEST_USER", "library_test_app")
+    test_password = os.getenv("MYSQL_TEST_PASSWORD", "test-app-password")
     if not database_name.endswith("_test") or not database_name.replace("_", "").isalnum():
         pytest.fail("MYSQL_TEST_DATABASE must be an alphanumeric name ending in _test")
+    if not test_user.replace("_", "").isalnum():
+        pytest.fail("MYSQL_TEST_USER must contain only letters, numbers, and underscores")
     root = mysql.connector.connect(
         host=os.getenv("DB_HOST", "127.0.0.1"),
         port=int(os.getenv("DB_PORT", "3306")),
@@ -36,6 +40,9 @@ def database():
     for statement in samples.split(";"):
         if statement.strip():
             cursor.execute(statement)
+    cursor.execute(f"DROP USER IF EXISTS `{test_user}`@'%' ")
+    cursor.execute(f"CREATE USER `{test_user}`@'%' IDENTIFIED BY %s", (test_password,))
+    cursor.execute(f"GRANT SELECT, INSERT, UPDATE ON `{database_name}`.* TO `{test_user}`@'%'")
     root.commit()
     cursor.close()
     root.close()
@@ -43,8 +50,8 @@ def database():
     connection = mysql.connector.connect(
         host=os.getenv("DB_HOST", "127.0.0.1"),
         port=int(os.getenv("DB_PORT", "3306")),
-        user=os.getenv("MYSQL_ROOT_USER", "root"),
-        password=os.getenv("MYSQL_ROOT_PASSWORD", "test-root-password"),
+        user=test_user,
+        password=test_password,
         database=database_name,
     )
     yield connection
@@ -61,3 +68,16 @@ def test_loan_lifecycle_and_duplicate_protection(database):
     return_loan(database, loan_id)
     second_loan_id = register_loan(database, request)
     assert second_loan_id > loan_id
+
+
+def test_application_user_has_no_schema_or_user_administration_privileges(database):
+    cursor = database.cursor()
+    cursor.execute("SELECT CURRENT_USER()")
+    expected_user = os.getenv("MYSQL_TEST_USER", "library_test_app")
+    assert cursor.fetchone()[0].startswith(f"{expected_user}@")
+    cursor.execute("SHOW GRANTS FOR CURRENT_USER")
+    grants = " ".join(row[0] for row in cursor.fetchall()).upper()
+    assert "SELECT, INSERT, UPDATE" in grants
+    assert "DROP" not in grants
+    assert "CREATE USER" not in grants
+    cursor.close()

@@ -20,7 +20,7 @@ CREATE TABLE IF NOT EXISTS copies (
   CONSTRAINT chk_copy_number CHECK (copy_number > 0),
   PRIMARY KEY (isbn, copy_number),
   CONSTRAINT fk_copies_book FOREIGN KEY (isbn) REFERENCES books (isbn)
-    ON UPDATE CASCADE ON DELETE RESTRICT
+    ON DELETE RESTRICT
 ) ENGINE=InnoDB DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
 CREATE TABLE IF NOT EXISTS borrowers (
@@ -40,9 +40,9 @@ CREATE TABLE IF NOT EXISTS loans (
   open_copy_number INT UNSIGNED GENERATED ALWAYS AS
     (CASE WHEN returned_at IS NULL THEN copy_number ELSE NULL END) STORED,
   CONSTRAINT fk_loans_copy FOREIGN KEY (isbn, copy_number)
-    REFERENCES copies (isbn, copy_number) ON UPDATE CASCADE ON DELETE RESTRICT,
+    REFERENCES copies (isbn, copy_number) ON DELETE RESTRICT,
   CONSTRAINT fk_loans_borrower FOREIGN KEY (borrower_id)
-    REFERENCES borrowers (id) ON UPDATE CASCADE ON DELETE RESTRICT,
+    REFERENCES borrowers (id) ON DELETE RESTRICT,
   CONSTRAINT chk_return_date CHECK (returned_at IS NULL OR returned_at >= loan_date),
   UNIQUE KEY ux_one_open_loan_per_copy (isbn, open_copy_number),
   INDEX ix_loans_borrower (borrower_id)

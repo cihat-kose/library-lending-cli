@@ -7,13 +7,11 @@ from library_lending_cli.cli import _table, build_parser, database_config, main,
 
 
 def test_table_formats_empty_result():
-    assert _table(("A", "Long"), []) == "A | Long\n--+-----"
+    assert _table(("A", "Long"), []) == "No records found."
 
 
-def test_parser_requires_a_command():
-    with pytest.raises(SystemExit) as error:
-        build_parser().parse_args([])
-    assert error.value.code == 2
+def test_parser_defaults_to_menu():
+    assert build_parser().parse_args([]).command is None
 
 
 def test_database_config_rejects_non_numeric_port(monkeypatch):
@@ -39,6 +37,8 @@ def test_database_config_reads_environment(monkeypatch):
         "user": "operator",
         "password": "secret",
         "database": "catalogue",
+        "autocommit": True,
+        "connection_timeout": 5,
     }
 
 
@@ -105,3 +105,59 @@ def test_run_dispatches_commands(arguments, service_name, expected, capsys):
 
     service.assert_called_once()
     assert expected in capsys.readouterr().out
+
+
+@patch("library_lending_cli.cli.mysql.connector.connect")
+def test_menu_flows(connect, monkeypatch, capsys):
+    answers = iter(
+        ["9", "1", "2", "Austen", "3", "1", "9780141439518", "1", "4", "1", "5", "1", "6", "7", "0"]
+    )
+    monkeypatch.setattr("builtins.input", lambda _: next(answers))
+    with patch("library_lending_cli.cli.run") as run_command:
+        assert main([]) == 0
+    assert [c.args[0].command for c in run_command.call_args_list] == [
+        "books",
+        "search",
+        "lend",
+        "return",
+        "history",
+        "borrowers",
+        "copies",
+    ]
+    assert "Please choose" in capsys.readouterr().out
+    connect.return_value.close.assert_called_once()
+
+
+@patch("library_lending_cli.cli.mysql.connector.connect")
+def test_menu_recovers_from_invalid_id(connect, monkeypatch, capsys):
+    answers = iter(["4", "bad", "0"])
+    monkeypatch.setattr("builtins.input", lambda _: next(answers))
+    assert main([]) == 0
+    assert "positive integer" in capsys.readouterr().out
+
+
+@pytest.mark.parametrize("error", [EOFError, KeyboardInterrupt])
+@patch("library_lending_cli.cli.mysql.connector.connect")
+def test_menu_exit_on_interruption(connect, error, monkeypatch, capsys):
+    def stop(_):
+        raise error
+
+    monkeypatch.setattr("builtins.input", stop)
+    assert main([]) == 0
+    connect.return_value.close.assert_called_once()
+    assert "Goodbye" in capsys.readouterr().out
+
+
+@patch("library_lending_cli.cli.mysql.connector.connect")
+def test_menu_recovers_from_database_error(connect, monkeypatch, capsys):
+    answers = iter(["1", "0"])
+    monkeypatch.setattr("builtins.input", lambda _: next(answers))
+    with patch("library_lending_cli.cli.run", side_effect=DatabaseError("injected failure")):
+        assert main([]) == 0
+    assert "Database error" in capsys.readouterr().out
+
+
+@patch("library_lending_cli.setup_database.initialize")
+def test_setup_command(initialize):
+    assert main(["setup"]) == 0
+    initialize.assert_called_once()

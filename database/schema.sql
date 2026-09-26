@@ -2,7 +2,7 @@ CREATE DATABASE IF NOT EXISTS library_lending
   CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 USE library_lending;
 
-CREATE TABLE books (
+CREATE TABLE IF NOT EXISTS books (
   isbn CHAR(13) PRIMARY KEY,
   title VARCHAR(255) NOT NULL,
   author VARCHAR(200) NOT NULL,
@@ -14,22 +14,23 @@ CREATE TABLE books (
   CONSTRAINT chk_page_count CHECK (page_count > 0)
 ) ENGINE=InnoDB;
 
-CREATE TABLE copies (
+CREATE TABLE IF NOT EXISTS copies (
   isbn CHAR(13) NOT NULL,
   copy_number INT UNSIGNED NOT NULL,
+  CONSTRAINT chk_copy_number CHECK (copy_number > 0),
   PRIMARY KEY (isbn, copy_number),
   CONSTRAINT fk_copies_book FOREIGN KEY (isbn) REFERENCES books (isbn)
     ON UPDATE CASCADE ON DELETE RESTRICT
 ) ENGINE=InnoDB;
 
-CREATE TABLE borrowers (
+CREATE TABLE IF NOT EXISTS borrowers (
   id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
   first_name VARCHAR(100) NOT NULL,
   last_name VARCHAR(100) NOT NULL,
   email VARCHAR(254) NOT NULL UNIQUE
 ) ENGINE=InnoDB;
 
-CREATE TABLE loans (
+CREATE TABLE IF NOT EXISTS loans (
   id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
   isbn CHAR(13) NOT NULL,
   copy_number INT UNSIGNED NOT NULL,

@@ -7,8 +7,8 @@ A small, tested Python/MySQL command-line application for browsing books, lendin
 Requirements: Python 3.11 or newer, MySQL Server 8.0 or newer, and a local MySQL account. Docker and cloud services are not required.
 
 ```powershell
-git clone https://github.com/cihat-kose/gokstadakademiet-arbeidskrav3.git
-cd gokstadakademiet-arbeidskrav3
+git clone https://github.com/cihat-kose/library-lending-cli.git
+cd library-lending-cli
 python -m venv .venv
 .venv\Scripts\python -m pip install --upgrade pip
 .venv\Scripts\python -m pip install -r requirements.txt

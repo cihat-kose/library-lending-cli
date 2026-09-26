@@ -98,9 +98,11 @@ python -m build
 ```
 
 Unit tests isolate error paths and transaction behavior with test doubles. The integration test
-recreates a disposable schema and checks the complete lend-conflict-return-lend lifecycle against
-MySQL. It is skipped locally unless `RUN_MYSQL_INTEGRATION=1`; CI runs it against a MySQL 8.4
-service. Coverage has an enforced 85% minimum for the Python package.
+recreates the disposable `library_lending_test` schema and checks the complete
+lend-conflict-return-lend lifecycle against MySQL. It is skipped locally unless
+`RUN_MYSQL_INTEGRATION=1`; CI runs it against a MySQL 8.4 service. The fixture refuses to drop a
+database whose name does not end in `_test`. Coverage has an enforced 85% minimum for the Python
+package.
 
 ## Design
 

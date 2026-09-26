@@ -1,5 +1,5 @@
 [build-system]
-requires = ["setuptools>=77"]
+requires = ["setuptools>=68"]
 build-backend = "setuptools.build_meta"
 
 [project]
@@ -8,10 +8,10 @@ version = "1.0.0"
 description = "A tested Python and MySQL command-line workflow for library loans"
 readme = "README.md"
 requires-python = ">=3.11"
-dependencies = ["mysql-connector-python>=9.1,<10"]
+dependencies = ["mysql-connector-python>=9.1"]
 
 [project.optional-dependencies]
-dev = ["pytest>=8.3,<9", "pytest-cov>=6,<8", "ruff>=0.11,<1", "build>=1.2,<2"]
+dev = ["pytest>=8.3", "pytest-cov>=6", "ruff>=0.11", "build>=1.2"]
 
 [project.scripts]
 library-cli = "library_lending_cli.cli:main"
@@ -23,6 +23,9 @@ where = ["src"]
 addopts = "--strict-markers --cov=library_lending_cli --cov-report=term-missing --cov-fail-under=85"
 testpaths = ["tests"]
 markers = ["integration: requires a configured MySQL test database"]
+
+[tool.coverage.run]
+branch = true
 
 [tool.ruff]
 target-version = "py311"

@@ -15,6 +15,9 @@ pytestmark = pytest.mark.integration
 def database():
     if os.getenv("RUN_MYSQL_INTEGRATION") != "1":
         pytest.skip("set RUN_MYSQL_INTEGRATION=1 to run MySQL integration tests")
+    database_name = os.getenv("MYSQL_TEST_DATABASE", "library_lending_test")
+    if not database_name.endswith("_test") or not database_name.replace("_", "").isalnum():
+        pytest.fail("MYSQL_TEST_DATABASE must be an alphanumeric name ending in _test")
     root = mysql.connector.connect(
         host=os.getenv("DB_HOST", "127.0.0.1"),
         port=int(os.getenv("DB_PORT", "3306")),
@@ -22,11 +25,15 @@ def database():
         password=os.getenv("MYSQL_ROOT_PASSWORD", "test-root-password"),
     )
     cursor = root.cursor()
-    cursor.execute("DROP DATABASE IF EXISTS library_lending")
-    for statement in Path("database/schema.sql").read_text(encoding="utf-8").split(";"):
+    cursor.execute(f"DROP DATABASE IF EXISTS `{database_name}`")
+    schema = Path("database/schema.sql").read_text(encoding="utf-8")
+    schema = schema.replace("library_lending", database_name)
+    for statement in schema.split(";"):
         if statement.strip():
             cursor.execute(statement)
-    for statement in Path("database/sample_data.sql").read_text(encoding="utf-8").split(";"):
+    samples = Path("database/sample_data.sql").read_text(encoding="utf-8")
+    samples = samples.replace("library_lending", database_name)
+    for statement in samples.split(";"):
         if statement.strip():
             cursor.execute(statement)
     root.commit()
@@ -38,7 +45,7 @@ def database():
         port=int(os.getenv("DB_PORT", "3306")),
         user=os.getenv("MYSQL_ROOT_USER", "root"),
         password=os.getenv("MYSQL_ROOT_PASSWORD", "test-root-password"),
-        database="library_lending",
+        database=database_name,
     )
     yield connection
     connection.close()

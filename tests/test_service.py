@@ -7,6 +7,8 @@ from library_lending_cli.service import (
     ConflictError,
     LoanRequest,
     NotFoundError,
+    borrower_history,
+    list_books,
     register_loan,
     return_loan,
     search_books,
@@ -96,3 +98,54 @@ def test_return_loan_rejects_already_returned_loan():
 def test_search_rejects_whitespace_only_query():
     with pytest.raises(ValueError, match="must not be empty"):
         search_books(MagicMock(), "  ")
+
+
+def test_list_books_returns_cursor_rows_and_closes_cursor():
+    connection, cursor = connection_with_cursor()
+    cursor.fetchall.return_value = [("isbn", "A title")]
+
+    assert list_books(connection) == [("isbn", "A title")]
+    cursor.close.assert_called_once_with()
+
+
+def test_search_uses_the_same_parameterized_pattern_for_title_and_author():
+    connection, cursor = connection_with_cursor()
+    cursor.fetchall.return_value = []
+
+    assert search_books(connection, "  Austen ") == []
+    assert cursor.execute.call_args.args[1] == ("%Austen%", "%Austen%")
+
+
+def test_register_loan_rejects_unknown_copy():
+    connection, _ = connection_with_cursor((1,), None)
+
+    with pytest.raises(NotFoundError, match="copy .* does not exist"):
+        register_loan(connection, LoanRequest.create(1, "9780141439518", 99))
+
+    connection.rollback.assert_called_once_with()
+
+
+def test_return_loan_rejects_unknown_and_invalid_ids():
+    connection, _ = connection_with_cursor(None)
+    with pytest.raises(NotFoundError, match="loan 404"):
+        return_loan(connection, 404)
+    connection.rollback.assert_called_once_with()
+
+    with pytest.raises(ValueError, match="positive"):
+        return_loan(connection, 0)
+
+
+def test_borrower_history_returns_rows():
+    connection, cursor = connection_with_cursor((1,))
+    cursor.fetchall.return_value = [(1, "Pride", "Austen", dt.date(2026, 1, 1), None)]
+
+    assert borrower_history(connection, 1) == [(1, "Pride", "Austen", dt.date(2026, 1, 1), None)]
+
+
+def test_borrower_history_rejects_invalid_or_unknown_borrower():
+    with pytest.raises(ValueError, match="positive"):
+        borrower_history(MagicMock(), 0)
+
+    connection, _ = connection_with_cursor(None)
+    with pytest.raises(NotFoundError, match="borrower 5"):
+        borrower_history(connection, 5)

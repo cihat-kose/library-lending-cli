@@ -18,9 +18,15 @@ def database():
     database_name = os.getenv("MYSQL_TEST_DATABASE", "library_lending_test")
     test_user = os.getenv("MYSQL_TEST_USER", "library_test_app")
     test_password = os.getenv("MYSQL_TEST_PASSWORD", "test-app-password")
-    if not database_name.endswith("_test") or not database_name.replace("_", "").isalnum():
+    database_token = database_name.replace("_", "")
+    if (
+        not database_name.endswith("_test")
+        or not database_token.isascii()
+        or not database_token.isalnum()
+    ):
         pytest.fail("MYSQL_TEST_DATABASE must be an alphanumeric name ending in _test")
-    if not test_user.replace("_", "").isalnum():
+    user_token = test_user.replace("_", "")
+    if not user_token.isascii() or not user_token.isalnum():
         pytest.fail("MYSQL_TEST_USER must contain only letters, numbers, and underscores")
     root = mysql.connector.connect(
         host=os.getenv("DB_HOST", "127.0.0.1"),

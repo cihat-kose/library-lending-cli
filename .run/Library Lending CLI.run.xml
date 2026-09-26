@@ -1,6 +1,6 @@
 <component name="ProjectRunConfigurationManager">
   <configuration default="false" name="Library Lending CLI" type="PythonConfigurationType" factoryName="Python">
-    <module name="gokstadakademiet-arbeidskrav3" />
+    <module name="library-lending-cli" />
     <option name="SDK_HOME" value="" />
     <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
     <option name="IS_MODULE_SDK" value="true" />

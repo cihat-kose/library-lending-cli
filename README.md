@@ -1,6 +1,6 @@
 # Library Lending CLI
 
-This portfolio application grew from Gokstad Akademiet backend coursework. It demonstrates tested Python services, parameterized MySQL queries, transaction handling, and a command-line workflow for books, copies, borrowers, loans, returns, and history. The coursework origin remains documented under `docs/coursework/`.
+A small, tested Python/MySQL command-line application for browsing books, lending and returning copies, and viewing borrower history. The original coursework and AI-use statement remain preserved under `docs/coursework/`.
 
 ## Quick start
 
@@ -10,6 +10,7 @@ Requirements: Python 3.11 or newer, MySQL Server 8.0 or newer, and a local MySQL
 git clone https://github.com/cihat-kose/gokstadakademiet-arbeidskrav3.git
 cd gokstadakademiet-arbeidskrav3
 python -m venv .venv
+.venv\Scripts\python -m pip install --upgrade pip
 .venv\Scripts\python -m pip install -r requirements.txt
 Copy-Item .env.example .env
 ```
@@ -30,9 +31,9 @@ Start the interactive menu from the project root:
 .venv\Scripts\python -m library_lending_cli
 ```
 
-The menu supports listing/searching books, viewing copies and borrowers, lending/returning copies, and borrower history. Script commands are also available, for example `python -m library_lending_cli search Austen`.
+The menu supports listing/searching books, viewing copies and borrowers, lending/returning copies, and borrower history. Script commands are also available, for example `python -m library_lending_cli search Austen`. If the package is installed with `python -m pip install .`, the equivalent console command is `library-lending-cli`.
 
-In PyCharm, select the `.venv` interpreter, set the project root as Working directory, and run the module `library_lending_cli` with no parameters. The checked-in `.run/` configuration uses the same entry point.
+In PyCharm, select the `.venv` interpreter, set the project root as Working directory, and run the module `library_lending_cli` with no parameters. The checked-in `.run/Library Lending CLI.run.xml` configuration uses the same entry point. The equivalent terminal command is `.venv\Scripts\python -m library_lending_cli`.
 
 ## Database and configuration
 
@@ -42,10 +43,10 @@ Connection settings are `DB_HOST`, `DB_PORT`, `DB_USER`, `DB_PASSWORD`, and `DB_
 
 ## Tests and QA
 
-Install development tools when contributing:
+Install the pinned quality and build tools when contributing:
 
 ```powershell
-.venv\Scripts\python -m pip install -c requirements-ci.txt -e ".[dev]"
+.venv\Scripts\python -m pip install -r requirements-ci.txt
 ```
 
 ```powershell
@@ -54,7 +55,7 @@ Install development tools when contributing:
 .venv\Scripts\ruff format --check .
 ```
 
-Unit and CLI tests use mocks. MySQL integration tests are marked separately and skipped unless `RUN_MYSQL_INTEGRATION=1` is explicitly set. They require `MYSQL_TEST_DATABASE` to end in `_test` (default `library_lending_test`) and may create/drop only that test database. They never target the development database. When explicitly enabled without a reachable server, the connection error is reported as a failure, not silently skipped.
+Unit and CLI tests use mocks. MySQL integration tests are marked separately and skipped unless `RUN_MYSQL_INTEGRATION=1` is explicitly set. They require `MYSQL_TEST_DATABASE` to end in `_test` (default `library_lending_test`) and may create/drop only that test database. They never target the development database. When explicitly enabled without a reachable server, the connection error is reported as a failure, not silently skipped. GitHub Actions runs the same test suite with a CI-only MySQL service; Docker is not required for local use.
 
 Coverage is enabled by pytest configuration and is reported only when the command is run.
 

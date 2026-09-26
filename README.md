@@ -9,6 +9,8 @@
 
 A small, tested Python/MySQL command-line application for browsing books, lending and returning copies, and viewing borrower history. The original coursework and AI-use statement remain preserved under `docs/coursework/`.
 
+This is a demo and coursework application, not a live library system. Its database, users, seed records, and example connection settings are fictional; no production database or valid real-user password is included.
+
 ## Related implementation
 
 [`library-loan-management`](https://github.com/cihat-kose/library-loan-management) is a separate, server-free SQLite implementation. This repository is the MySQL implementation; their setup instructions and dependencies are intentionally different and should not be mixed.

@@ -3,7 +3,14 @@ from unittest.mock import MagicMock, patch
 import pytest
 from mysql.connector import Error as DatabaseError
 
-from library_lending_cli.cli import _table, build_parser, database_config, main, run
+from library_lending_cli.cli import (
+    _database_error_message,
+    _table,
+    build_parser,
+    database_config,
+    main,
+    run,
+)
 
 
 def test_table_formats_empty_result():
@@ -77,6 +84,25 @@ def test_main_reports_connection_error(connect, capsys):
 
     assert main(["books"]) == 3
     assert "Database error" in capsys.readouterr().err
+
+
+@pytest.mark.parametrize(
+    ("errno", "expected"),
+    [
+        (2003, "Cannot reach MySQL"),
+        (1045, "rejected the credentials"),
+        (1049, "database was not found"),
+        (1146, "schema is missing"),
+    ],
+)
+def test_database_error_message_is_actionable_without_exposing_details(errno, expected):
+    error = DatabaseError("password=do-not-print")
+    error.errno = errno
+
+    message = _database_error_message(error)
+
+    assert expected in message
+    assert "do-not-print" not in message
 
 
 @pytest.mark.parametrize(

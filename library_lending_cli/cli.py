@@ -122,8 +122,8 @@ def menu(connection: Any) -> None:
             run(args, connection)
         except (ValueError, LendingError) as exc:
             print(f"Error: {exc}")
-        except DatabaseError:
-            print("Database error. Please check MySQL and retry, or exit.")
+        except DatabaseError as exc:
+            print(_database_error_message(exc))
 
 
 def read_id(prompt: str) -> int:
@@ -131,6 +131,33 @@ def read_id(prompt: str) -> int:
         return int(input(prompt))
     except ValueError as exc:
         raise ValueError("ID must be a positive integer") from exc
+
+
+def _database_error_message(error: BaseException) -> str:
+    """Return actionable, non-sensitive guidance for a database failure."""
+    errno = getattr(error, "errno", None)
+    if isinstance(error, OSError) or errno in {2002, 2003, 2005}:
+        return (
+            "Cannot reach MySQL. Check that the service is running and DB_HOST/DB_PORT are correct."
+        )
+    if errno == 1045:
+        return (
+            "MySQL rejected the credentials. Check DB_USER/DB_PASSWORD in .env or the environment."
+        )
+    if errno == 1049:
+        return (
+            "The configured database was not found. Check DB_NAME and run setup "
+            "from the project root."
+        )
+    if errno in {1046, 1146}:
+        return (
+            "The database schema is missing. Run setup from the project root "
+            "with the same interpreter."
+        )
+    return (
+        "Database error. Check MySQL, .env and run setup first; connection details "
+        "are not shown for safety."
+    )
 
 
 def main(argv: Sequence[str] | None = None) -> int:
@@ -153,10 +180,6 @@ def main(argv: Sequence[str] | None = None) -> int:
     except (ValueError, LendingError) as exc:
         print(f"Error: {exc}", file=sys.stderr)
         return 2
-    except (DatabaseError, OSError):
-        print(
-            "Database error. Check MySQL, .env and run setup first; "
-            "connection details are not shown for safety.",
-            file=sys.stderr,
-        )
+    except (DatabaseError, OSError) as exc:
+        print(_database_error_message(exc), file=sys.stderr)
         return 3

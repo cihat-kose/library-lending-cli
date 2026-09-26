@@ -17,26 +17,43 @@ This is a demo and coursework application, not a live library system. Its databa
 
 ## Quick start
 
-Requirements: Python 3.11 or newer, MySQL Server 8.0 or newer, and a local MySQL account. Docker and cloud services are not required.
+Requirements: Python 3.11 or newer, MySQL Server 8.0 or newer, and a local MySQL account. MySQL Server must be installed and running; MySQL Workbench alone is only a client and is not enough. Docker and cloud services are not required.
 
 ```powershell
 git clone https://github.com/cihat-kose/library-lending-cli.git
 cd library-lending-cli
 python -m venv .venv
 .venv\Scripts\python -m pip install --upgrade pip
-.venv\Scripts\python -m pip install -r requirements.txt
-Copy-Item .env.example .env
+.venv\Scripts\python.exe -m pip install -r requirements.txt
+if (-not (Test-Path .env)) { Copy-Item .env.example .env }
 ```
 
-Edit `.env` with local MySQL settings. It contains placeholders only and must not be committed. The program reads `.env` from the project root; real environment variables override it.
+The conditional copy creates `.env` only when it does not exist. After editing it, do not run the copy command again: it would reset your local settings. Set `DB_HOST`, `DB_PORT`, `DB_USER`, `DB_PASSWORD`, and `DB_NAME` to match your own MySQL account and database. Keep the real `.env` local and never commit it; environment variables with the same names override values from `.env`.
 
-Prepare the database without deleting existing rows:
+### Windows MySQL service check
+
+Check installed MySQL services from PowerShell:
 
 ```powershell
-.venv\Scripts\python -m library_lending_cli setup
+Get-Service *MySQL*
 ```
 
-Setup uses the reviewed files in `database/`, creates missing schema objects, and never runs `DROP DATABASE`. If application tables already contain data, sample inserts are skipped. An empty database receives the bundled demonstration books, copies, and borrowers.
+If the installed service is named `MySQL80` and its status is `Disabled` or `Stopped`, open PowerShell as Administrator and run:
+
+```powershell
+Set-Service -Name MySQL80 -StartupType Automatic
+Start-Service -Name MySQL80
+```
+
+If your installation uses another service name, use the exact name returned by `Get-Service *MySQL*`. Do not use these commands for a service that is already running.
+
+From the project root, run setup once with the same interpreter used for the project:
+
+```powershell
+.venv\Scripts\python.exe -m library_lending_cli setup
+```
+
+Setup uses the reviewed files in `database/`, creates missing schema objects, and never runs `DROP DATABASE`. If all application tables already exist, setup preserves the existing data and skips the demo seed; otherwise it prepares the schema and bundled demonstration records. Setup is explicit and does not run automatically when the CLI starts.
 
 Start the interactive menu from the project root:
 
@@ -46,13 +63,26 @@ Start the interactive menu from the project root:
 
 The menu supports listing/searching books, viewing copies and borrowers, lending/returning copies, and borrower history. Script commands are also available, for example `python -m library_lending_cli search Austen`. If the package is installed with `python -m pip install .`, the equivalent console command is `library-lending-cli`.
 
-In PyCharm, select the `.venv` interpreter, set the project root as Working directory, and run the module `library_lending_cli` with no parameters. The checked-in `.run/Library Lending CLI.run.xml` configuration uses the same entry point. The equivalent terminal command is `.venv\Scripts\python -m library_lending_cli`.
+In PyCharm:
+
+1. Select the project `.venv` interpreter.
+2. Set `C:\Users\<you>\...\library-lending-cli` as the Working directory.
+3. Select the `Library Lending CLI` run configuration and run the `library_lending_cli` module with no parameters.
+
+The checked-in `.run/Library Lending CLI.run.xml` configuration uses the same entry point. The equivalent terminal command is `.venv\Scripts\python.exe -m library_lending_cli`.
 
 ## Database and configuration
 
 Runtime uses MySQL with InnoDB. `database/schema.sql` defines normalized books, copies, borrowers, and loans tables. Foreign keys, checks, row locks, and a unique open-copy key protect integrity. `database/sample_data.sql` contains non-personal demonstration data. Application queries pass values as parameters.
 
 Connection settings are `DB_HOST`, `DB_PORT`, `DB_USER`, `DB_PASSWORD`, and `DB_NAME`. Setup needs permission to create the schema; normal use can use a least-privilege account with `SELECT`, `INSERT`, and `UPDATE`.
+
+## Troubleshooting
+
+- **MySQL is unavailable:** confirm that the MySQL Server service is installed and running; Workbench by itself cannot provide the database server.
+- **Authentication is rejected:** check the account name and password in `.env`, and remember that matching environment variables take precedence over `.env`.
+- **The database or tables are missing:** confirm `DB_NAME`, then run the explicit setup command from the project root with `.venv\Scripts\python.exe`.
+- **PyCharm behaves differently from the terminal:** verify that PyCharm uses the project `.venv`, the project root as Working directory, the `library_lending_cli` module, and the same environment variables as the terminal.
 
 ## Tests and QA
 

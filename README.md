@@ -1,12 +1,17 @@
 # Library Lending CLI
 
-[![CI](https://github.com/cihat-kose/library-lending-cli/actions/workflows/ci.yml/badge.svg?branch=master)](https://github.com/cihat-kose/library-lending-cli/actions/workflows/ci.yml)
-![Python 3.11+](https://img.shields.io/badge/Python-3.11%2B-3776AB?logo=python&logoColor=white)
-![MySQL 8.0+](https://img.shields.io/badge/MySQL-8.0%2B-4479A1?logo=mysql&logoColor=white)
-![Tests: pytest](https://img.shields.io/badge/Tests-pytest-0A9EDC?logo=pytest&logoColor=white)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+[![CI Tests](https://img.shields.io/github/actions/workflow/status/cihat-kose/library-lending-cli/ci.yml?branch=master&style=for-the-badge&label=CI%20Tests&logo=github)](https://github.com/cihat-kose/library-lending-cli/actions/workflows/ci.yml)
+[![Python](https://img.shields.io/badge/Python-3.11%2B-3776AB?style=for-the-badge&logo=python&logoColor=white)](https://www.python.org/)
+[![MySQL](https://img.shields.io/badge/MySQL-8.0%2B-4479A1?style=for-the-badge&logo=mysql&logoColor=white)](https://www.mysql.com/)
+[![Interface](https://img.shields.io/badge/Interface-CLI-222222?style=for-the-badge&logo=gnubash&logoColor=white)](https://docs.python.org/3/library/argparse.html)
+[![Tests](https://img.shields.io/badge/Tests-pytest-0A9EDC?style=for-the-badge&logo=pytest&logoColor=white)](https://docs.pytest.org/)
+[![License](https://img.shields.io/badge/License-MIT-F7DF1E?style=for-the-badge&logo=open-source-initiative&logoColor=black)](LICENSE)
 
 A small, tested Python/MySQL command-line application for browsing books, lending and returning copies, and viewing borrower history. The original coursework and AI-use statement remain preserved under `docs/coursework/`.
+
+## Related implementation
+
+[`library-loan-management`](https://github.com/cihat-kose/library-loan-management) is a separate, server-free SQLite implementation. This repository is the MySQL implementation; their setup instructions and dependencies are intentionally different and should not be mixed.
 
 ## Quick start
 

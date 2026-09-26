@@ -1,0 +1,33 @@
+[build-system]
+requires = ["setuptools>=77"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "library-lending-cli"
+version = "1.0.0"
+description = "A tested Python and MySQL command-line workflow for library loans"
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = ["mysql-connector-python>=9.1,<10"]
+
+[project.optional-dependencies]
+dev = ["pytest>=8.3,<9", "pytest-cov>=6,<8", "ruff>=0.11,<1", "build>=1.2,<2"]
+
+[project.scripts]
+library-cli = "library_lending_cli.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+addopts = "--strict-markers --cov=library_lending_cli --cov-report=term-missing --cov-fail-under=85"
+testpaths = ["tests"]
+markers = ["integration: requires a configured MySQL test database"]
+
+[tool.ruff]
+target-version = "py311"
+line-length = 100
+extend-exclude = ["docs/coursework"]
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "B", "UP", "SIM"]

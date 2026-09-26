@@ -9,6 +9,7 @@ Ingen ekstra konfigurasjon er nødvendig – programmet kan kjøres direkte.
 
 import math
 
+
 def les_tall(tekst):
     """Leser et tall fra brukeren og håndterer ugyldig input."""
     while True:
@@ -17,11 +18,13 @@ def les_tall(tekst):
         except ValueError:
             print("Ugyldig tall. Prøv igjen.")
 
+
 def addisjon():
     """Utfører addisjon av to tall."""
     a = les_tall("Skriv inn første tall: ")
     b = les_tall("Skriv inn andre tall: ")
     print(f"Resultat: {a} + {b} = {a + b}\n")
+
 
 def subtraksjon():
     """Utfører subtraksjon av to tall."""
@@ -29,11 +32,13 @@ def subtraksjon():
     b = les_tall("Skriv inn andre tall: ")
     print(f"Resultat: {a} - {b} = {a - b}\n")
 
+
 def multiplikasjon():
     """Utfører multiplikasjon av to tall."""
     a = les_tall("Skriv inn første tall: ")
     b = les_tall("Skriv inn andre tall: ")
     print(f"Resultat: {a} * {b} = {a * b}\n")
+
 
 def divisjon():
     """Utfører divisjon med sjekk mot deling på null."""
@@ -44,11 +49,13 @@ def divisjon():
     else:
         print(f"Resultat: {a} / {b} = {a / b}\n")
 
+
 def potens():
     """Beregner x opphøyd i y."""
     a = les_tall("Skriv inn grunnverdi (x): ")
     b = les_tall("Skriv inn eksponent (y): ")
-    print(f"Resultat: {a} ^ {b} = {a ** b}\n")
+    print(f"Resultat: {a} ^ {b} = {a**b}\n")
+
 
 def kvadratrot():
     """Beregner kvadratroten av et tall, hvis tallet er ikke-negativt."""
@@ -57,6 +64,7 @@ def kvadratrot():
         print("Kan ikke ta kvadratroten av et negativt tall.\n")
     else:
         print(f"Resultat: √{a} = {math.sqrt(a)}\n")
+
 
 def skriv_meny():
     """Viser kalkulatorens meny."""
@@ -68,6 +76,7 @@ def skriv_meny():
     print("5. Potens")
     print("6. Kvadratrot")
     print("7. Avslutt")
+
 
 def main():
     """Programløkken som håndterer menyvalg og funksjonskall."""
@@ -92,6 +101,7 @@ def main():
             break
         else:
             print("Ugyldig valg. Skriv inn et tall mellom 1 og 7.\n")
+
 
 if __name__ == "__main__":
     main()
